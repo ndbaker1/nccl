@@ -178,6 +178,7 @@ ncclResult_t ncclGetLocalCpu(struct ncclTopoSystem* system, int gpu, int* retCpu
 static int mergePathType(int type0, int type1){
   int max = std::max(type0,type1);
   int min = std::min(type0,type1);
+  WARN("LOGGY : max %d, min %d", max, min);
   if(max == PATH_PHB && min == PATH_C2C) return PATH_P2C;
   else return max;
 }
@@ -682,6 +683,7 @@ ncclResult_t ncclTopoComputePaths(struct ncclTopoSystem* system, struct ncclComm
       NCCLCHECK(ncclGetLocalCpu(system, g, &c));
       if (c == -1) continue;
       if (mergePathType(gpuNode->paths[CPU][c].type, netNode->paths[CPU][c].type) == PATH_P2C) {
+        WARN("LOGGY : merging NET %d <-> GPU %d", n, g);
         gpuNode->paths[NET][n].type = std::min(PATH_P2C, gpuNode->paths[NET][n].type);
         netNode->paths[GPU][g].type = std::min(PATH_P2C, netNode->paths[GPU][g].type);
       }
